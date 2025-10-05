@@ -23,8 +23,34 @@ public class SlotToParticipantConsumer extends Consumer {
     }
 
     public Effect onEvent(BookingEvent event) {
-        // Supply your own implementation
-        return effects().done();
+        String id = participantSlotId(event);
+        return switch(event) {
+            case BookingEvent.ParticipantBooked booked -> {
+                client.forEventSourcedEntity(id)
+                        .method(ParticipantSlotEntity::book)
+                        .invoke(new ParticipantSlotEntity.Commands.Book(booked.slotId(), booked.participantId(), booked.participantType(), booked.bookingId()));
+                yield effects().done();
+            }
+            case BookingEvent.ParticipantCanceled cancelled -> {
+                logger.info("Cancelling participant " + cancelled.participantId() + " in booking " + cancelled.bookingId() + " and slot " + cancelled.slotId());
+                client.forEventSourcedEntity(id)
+                        .method(ParticipantSlotEntity::cancel)
+                        .invoke(new ParticipantSlotEntity.Commands.Cancel(cancelled.slotId(), cancelled.participantId(), cancelled.participantType(), cancelled.bookingId()));
+                yield effects().done();
+            }
+            case BookingEvent.ParticipantMarkedAvailable available -> {
+                client.forEventSourcedEntity(id)
+                        .method(ParticipantSlotEntity::markAvailable)
+                        .invoke(new ParticipantSlotEntity.Commands.MarkAvailable(available.slotId(), available.participantId(), available.participantType()));
+                yield effects().done();
+            }
+            case BookingEvent.ParticipantUnmarkedAvailable unavailable -> {
+                client.forEventSourcedEntity(id)
+                        .method(ParticipantSlotEntity::unmarkAvailable)
+                        .invoke(new ParticipantSlotEntity.Commands.UnmarkAvailable(unavailable.slotId(), unavailable.participantId(), unavailable.participantType()));
+                yield effects().done();
+            }
+        };
     }
 
     // Participant slots are keyed by a derived key made up of

@@ -1,6 +1,11 @@
 package io.example.domain;
 
+import io.example.application.ParticipantSlotsView;
 import io.example.domain.Participant.ParticipantType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -10,6 +15,8 @@ import java.util.stream.Collectors;
 // As bookings and availability are added and removed, the contents of those
 // sets are shifted from one to the other.
 public record Timeslot(Set<Booking> bookings, Set<Participant> available) {
+
+  private static Logger logger = LoggerFactory.getLogger(Timeslot.class);
 
   public Timeslot reserve(BookingEvent.ParticipantMarkedAvailable reserved) {
     available.add(new Participant(reserved.participantId(), reserved.participantType()));
@@ -54,6 +61,7 @@ public record Timeslot(Set<Booking> bookings, Set<Participant> available) {
   public Timeslot cancelBooking(String bookingId) {
     Set<Booking> books =
         bookings.stream().filter(b -> !b.bookingId().equals(bookingId)).collect(Collectors.toSet());
+    logger.info("new books: " + Arrays.toString(books.toArray()));
     return new Timeslot(books, available);
   }
 

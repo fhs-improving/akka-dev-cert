@@ -37,7 +37,6 @@ public class ParticipantSlotEntity
 
     public Effect<Done> cancel(ParticipantSlotEntity.Commands.Cancel cancel) {
         Event.Canceled event = new Event.Canceled(cancel.slotId, cancel.participantId, cancel.participantType, cancel.bookingId);
-        logger.info("Cancelling " + cancel);
         return effects()
                 .persist(event)
                 .thenReply(newState -> Done.done());

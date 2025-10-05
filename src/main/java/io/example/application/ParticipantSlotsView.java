@@ -26,7 +26,7 @@ public class ParticipantSlotsView extends View {
 
         public Effect<SlotRow> onEvent(ParticipantSlotEntity.Event event) {
             return switch(event) {
-                case Event.UnmarkedAvailable unused -> effects().deleteRow();
+                case Event.UnmarkedAvailable ignored -> effects().deleteRow();
                 case Event.MarkedAvailable available -> {
                     SlotRow row = new SlotRow(available.slotId(), available.participantId(),
                             available.participantType().toString(), "", SlotStatus.AVAILABLE);
@@ -37,10 +37,7 @@ public class ParticipantSlotsView extends View {
                             booked.participantType().toString(), booked.bookingId(), SlotStatus.BOOKED);
                     yield effects().updateRow(row);
                 }
-                case Event.Canceled unused -> {
-                    logger.info("In the view, canceling: " + unused);
-                    yield effects().deleteRow();
-                }
+                case Event.Canceled ignored -> effects().deleteRow();
             };
         }
     }

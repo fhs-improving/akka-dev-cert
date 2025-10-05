@@ -74,7 +74,6 @@ public class BookingSlotEntity extends EventSourcedEntity<Timeslot, BookingEvent
     // NOTE: canceling a booking should produce 3
     // `ParticipantCanceled` events
     public Effect<Done> cancelBooking(String bookingId) {
-        logger.info("cancelling booking " + bookingId);
         List<Timeslot.Booking> bookingsToCancel = currentState().findBooking(bookingId);
         if (bookingsToCancel.isEmpty()) {
             return effects().error("Cannot cancel booking " + bookingId + " as booking does not exist.");
@@ -99,10 +98,7 @@ public class BookingSlotEntity extends EventSourcedEntity<Timeslot, BookingEvent
     @Override
     public Timeslot applyEvent(BookingEvent event) {
         return switch (event) {
-            case BookingEvent.ParticipantCanceled cancelled -> {
-                    logger.info("Cancellingggg " + cancelled);
-                yield currentState().cancelBooking(cancelled.bookingId());
-            }
+            case BookingEvent.ParticipantCanceled cancelled -> currentState().cancelBooking(cancelled.bookingId());
             case BookingEvent.ParticipantBooked booked ->
                 currentState().book(booked);
             case BookingEvent.ParticipantMarkedAvailable available ->

@@ -47,7 +47,6 @@ public class FlightTrainingSchedulerIntegrationTest extends TestKitSupport {
 
     @Test
     public void slotEmptyWhenNothingMadeAvailable() {
-        System.out.println("starting test 1");
         var response = httpClient
                 .GET("/flight/availability/public/bestslot")
                 .invoke();
@@ -59,7 +58,6 @@ public class FlightTrainingSchedulerIntegrationTest extends TestKitSupport {
 
     @Test
     public void participantGoneWhenMarkedAvailableThenUnavailable(){
-        System.out.println("starting test 2");
         httpClient
                 .POST("/flight/availability/bestslot")
                 .withRequestBody(new FlightEndpoint.AvailabilityRequest("alice", "student"))
@@ -86,7 +84,6 @@ public class FlightTrainingSchedulerIntegrationTest extends TestKitSupport {
 
     @Test
     public void participantsShowAsAvailableAfterMarkedAvailable() {
-        System.out.println("starting test 3");
         httpClient
                 .POST("/flight/availability/bestslot")
                 .withRequestBody(new FlightEndpoint.AvailabilityRequest("alice", "student"))
@@ -160,8 +157,7 @@ public class FlightTrainingSchedulerIntegrationTest extends TestKitSupport {
     }
 
     @Test
-    public void bookingTest() throws InterruptedException {
-        System.out.println("starting test 4");
+    public void bookingTest() {
         httpClient
                 .POST("/flight/availability/bestslot")
                 .withRequestBody(new FlightEndpoint.AvailabilityRequest("alice", "student"))

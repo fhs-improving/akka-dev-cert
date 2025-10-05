@@ -61,7 +61,6 @@ public record Timeslot(Set<Booking> bookings, Set<Participant> available) {
   public Timeslot cancelBooking(String bookingId) {
     Set<Booking> books =
         bookings.stream().filter(b -> !b.bookingId().equals(bookingId)).collect(Collectors.toSet());
-    logger.info("new books: " + Arrays.toString(books.toArray()));
     return new Timeslot(books, available);
   }
 
